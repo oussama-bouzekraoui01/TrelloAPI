@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,12 +33,12 @@ public class TrelloController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/boardcards")
     public List <Card> fetchTrelloCards() throws IOException {
-        List<Card> card = trelloService.getBoardCards("6220dee6e58fd671deefe515");
+        List<Card> card = trelloService.getBoardCards("623f95574962f689d267ade2");
         return card;
     }
     @RequestMapping(method = RequestMethod.POST, value = "/addcards/{ListId}")
     public void addCard(@RequestBody Card card, @PathVariable("ListId")String listID) throws IOException{
-      trelloService.createCard("6220dee6e58fd671deefe515",card, listID);
+      trelloService.createCard("623f95574962f689d267ade2",card, listID);
     }
 
 
@@ -49,7 +50,7 @@ public class TrelloController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/alllists")
     public List <TList> fetchALLTrelloLists() throws IOException {
-        List<TList> list = trelloService.getBoardLists("6220dee6e58fd671deefe515");
+        List<TList> list = trelloService.getBoardLists("623f95574962f689d267ade2");
         return list;
     }
 
@@ -71,7 +72,18 @@ public class TrelloController {
         System.out.println("Card is updated");
     }
 
-    
+    @GetMapping(path = "/assignedTasks/{idMember}")
+    public List<Card> getAssignedTasks(@PathVariable("idMember") String idMember) throws IOException {
+        List<Card> cards = fetchTrelloCards();
+        List<Card> filtered = new ArrayList<>();
+        for(Card card : cards) {
+            for(String member : card.getIdMembers()) {
+                if(member.equals(idMember))
+                    filtered.add(card);
+            }
+        }
+        return filtered;
+    }
 
 
 }
